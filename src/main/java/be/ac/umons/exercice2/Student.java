@@ -1,6 +1,8 @@
 package be.ac.umons.exercice2;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,18 +31,22 @@ public class Student {
 
     public double averageScore() {
 
-        int count = 0;
+        /*int count = 0;
         double totalScore = 0.0;
         for (Integer score : scoreByCourse.values()) {
             count++;
             totalScore += score;
         }
-        return totalScore / count;
+        return totalScore / count; */
+        return scoreByCourse.values().stream().mapToInt(Integer::intValue).average().orElse(0.0);
+        //on transforme les valeurs de la map en stream, on transforme en entier puis moy et par défaut on revoit O
+        //pour éviter la division par zéro
+        //on utilise la fonction intValue pour transformer en entier
     }
 
     public String bestCourse() {
 
-        String bestCourse = "";
+       /* String bestCourse = "";
         Integer bestScore = 0;
 
         for (Map.Entry<String, Integer> e : scoreByCourse.entrySet()) {
@@ -50,23 +56,39 @@ public class Student {
             }
         }
 
-        return bestCourse;
+        return bestCourse; */
+       return scoreByCourse.entrySet().stream()
+               .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+               .findFirst().map(Map.Entry::getKey).toString();
+       //entrySet renvoie une liste de clé -valeur et on transforme en stream
+        //on trie. Par defaut () on trie par ordre croissant. Avec reverseOrder on trie par ordre décroissant
+        //on prend le premier et on veut renvoyer sa clé (il faur la renvoyer sous forme d'entier)
     }
 
     public int bestScore() {
 
-        int bestScore = 0;
+        /*int bestScore = 0;
         for (Map.Entry<String, Integer> entry : scoreByCourse.entrySet()) {
             if (entry.getValue() > bestScore)
                 bestScore = entry.getValue();
         }
-        return bestScore;
+        return bestScore;*/
+        /*return scoreByCourse.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElse(0);  //attention c'est 0 et pas 0.0 car le type est entier*/
+
+        //autre solution
+        return scoreByCourse.values().stream().mapToInt(Integer::intValue)
+                .max().getAsInt();
+
 
     }
 
     public Set<String> failedCourses() {
 
-        List<Map.Entry<String, Integer>> filteredEntries = new ArrayList<>();
+        /*List<Map.Entry<String, Integer>> filteredEntries = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : scoreByCourse.entrySet()) {
             if (entry.getValue() < 12) {
                 filteredEntries.add(entry);
@@ -77,7 +99,15 @@ public class Student {
         for (Map.Entry<String, Integer> entry : filteredEntries) {
             failedCourses.add(entry.getKey());
         }
-        return failedCourses;
+        return failedCourses;*/
+
+        return scoreByCourse.entrySet().stream()
+                .filter(entry->entry.getValue()<10)
+                .map(Map.Entry::getKey) //on récupère les éléments de cours
+                //map n'a rien à voir avec une Map (le container) mais fonction pour dire 'faire correspondre'
+                .collect(Collectors.toCollection(HashSet::new));
+        //collect crée une nouvelle collection de type HasSet (nouvelle)
+        //car le résultat attendu est un ensemble set
     }
 
     public boolean isSuccessful() {
@@ -86,10 +116,14 @@ public class Student {
 
     public Set<String> attendedCourses() {
 
-        Set<String> courses = new LinkedHashSet<String>();
+        /*Set<String> courses = new LinkedHashSet<String>();
         for (String courseName : scoreByCourse.keySet())
             courses.add(courseName);
-        return courses;
+        return courses;*/
+        return scoreByCourse.keySet().stream()
+                .sorted()
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        //ce nv type de container conserve l'ordre des objets qu'on ajoute
     }
 
     public String getName() {
