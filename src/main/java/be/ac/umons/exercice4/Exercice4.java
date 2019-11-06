@@ -27,7 +27,7 @@ public class Exercice4 {
         String filePath = null;
 
         if (args.length == 0)
-            filePath = new String("textewiki.txt");
+            filePath = new String("./textewiki.txt");
         else if (args.length > 0 && args[0] != null && !args[0].isEmpty())
         {
             filePath = args[0];
