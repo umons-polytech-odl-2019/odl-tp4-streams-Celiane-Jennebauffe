@@ -56,7 +56,14 @@ public class Exercice1 {
         // Compléter le code par le traitement d'un stream équivalent
         // à celui de la fonction calculateAverage
 
-        return 0;
+        return peoples.stream().mapToInt(p->p.getAge()).average().getAsDouble();
+        // on transforme la liste en stream, on transforme ensuite ce flux en flux d'entiers (chaque élément
+        //p devient l'âge de p). On en prend la moyenne et on la renvoit sous forme de double
+
+        //return(double)people.stream().map... (utilise le transtypage)
+
+        //ou travailler sans le stream et faire forEach avec le lambda
+        //le lambda est ici: "p->p.get..."
     }
 
 }
