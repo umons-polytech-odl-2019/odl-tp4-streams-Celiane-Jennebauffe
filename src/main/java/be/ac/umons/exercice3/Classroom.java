@@ -22,7 +22,7 @@ public class Classroom {
 
     public double averageScore() {
 
-        double sum = 0;
+        /*double sum = 0;
         int cpt = 0;
         for (Student student : students) {
             for (Map.Entry<String, Integer> courses : student.getScoreByCourse().entrySet()) {
@@ -30,7 +30,19 @@ public class Classroom {
                 cpt++;
             }
         }
-        return (sum / cpt);
+        return (sum / cpt);*/
+        return students.stream()
+                .flatMapToInt(Student->Student.getScoreByCourse().values().stream().mapToInt(Integer::intValue))
+                .average()
+                .orElse(0.0);
+           //flatMap associe un student avec le résultat d'un flux (applatir)
+           // on fait coorespondre un etudiant a quelque chose
+        // le qqlch est une map  dont je n'extrais que les valeurs
+        //je crée un nv stream sur ces valeurs + transf en entiers
+        // le résultat de  ligne 35 est une collection d'entiers sur lequel je fais une moyenne
+        //orElse au cas ou je n'aurai pas d'éléments sur lequel calculer (sans ça je renvoie un null qui n'est pas le type demandé)
+
+        //besoin d'un flux d'entiers car on veut utiliser average
     }
 
     public int countStudents() {
@@ -51,19 +63,24 @@ public class Classroom {
 
     public List<Student> successfulStudents() {
 
-        Set<Student> studentSet = new TreeSet<>(
+        /*Set<Student> studentSet = new TreeSet<>(
                 Comparator.comparingDouble(student -> -student.averageScore()));
-
         for (Student s : students) {
             if (s.isSuccessful()) {
                 studentSet.add(s);
-            }
+
         }
 
         List<Student> studentList = new ArrayList<>();
         for (Student s : studentSet)
             studentList.add(s);
-        return studentList;
-
+        return studentList; */
+        return students.stream()
+                .filter(Student::isSuccessful) //isSuccessfull méthode de Student (renvoie true or false)
+                .sorted(Comparator.comparingDouble(student->-student.averageScore()))
+                .collect(Collectors.toList());
+        //on récupère les étudiants qui ont réussi
+        //on trie les notes par ordre décroissant (signe moins) des étudiants (en utiliant un lambda qui fait corresppndre l'étudiant à sa moyenne annuelle)
+        //on renvoit une list car type demandé
     }
 }
